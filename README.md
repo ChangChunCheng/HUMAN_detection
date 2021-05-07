@@ -7,7 +7,10 @@
 - GitHub: [jhukaby/webcamjs](https://github.com/jhuckaby/webcamjs)
 
 **After Install environment**
-- Download the pretrained model from the link of tf-pose-estimation and headpose-fsanet-pytorch and put it in src/services/detection/fsanet_pytorch/pretrained, src/services/detection/tf_pose/models/graph and src/services/detection/tf_pose/models/pretrained
+- Download the pretrained model from the link of tf-pose-estimation and headpose-fsanet-pytorch and put it in 
+  - src/services/detection/fsanet_pytorch/pretrained
+  - src/services/detection/tf_pose/models/graph
+  - src/services/detection/tf_pose/models/pretrained
 - Install python3, python3-pip, virtualenv with pip
 - Edit ".env" file.
   - hasGPU: true if GPU exist, 'None' if GPU doesn't exist
