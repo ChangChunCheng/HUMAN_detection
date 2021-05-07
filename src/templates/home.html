@@ -1,0 +1,192 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/reset.css') }}" />
+    <style>
+        #takeCamera {
+            width: 1000px;
+            display: inline-block;
+            margin: 5 0 10 0;
+            align-items: center;
+        }
+        
+        #my_camera {
+            width: 320;
+            height: 240;
+            border: 1px solid black;
+            display: inline-flex;
+            margin: 0 5;
+        }
+        
+        #divBtn {
+            display: inline-block;
+            background-color: rgb(235, 106, 106);
+        }
+        
+        #button {
+            background-color: #4caf50;
+            border: 1px solid black;
+            color: white;
+            padding: 15px 24px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 24px;
+            cursor: pointer;
+            display: inline-block;
+            margin: 0 5;
+        }
+        
+        #my_camera_detection {
+            width: 320;
+            height: 240;
+            border: 1px solid black;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 5;
+        }
+        
+        #results {
+            margin: auto;
+        }
+        
+        #results div {
+            background-color: rgb(224, 224, 224);
+            border: 1px solid #000;
+            width: 330px;
+            display: inline-block;
+            margin: 0 0 5 5;
+        }
+        
+        img {
+            display: inline-block;
+            width: 320px;
+            height: 240px;
+            margin: 5 5 5 5;
+        }
+        
+        p {
+            display: inline-block;
+            width: 320px;
+            text-align: center;
+            size: 16px;
+            margin: 5 5 5 5;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="takeCamera">
+        <div id="my_camera"></div>
+        <div id="divBtn">
+            <button id="button" onclick="get_img(this)">On</button>
+        </div>
+        <div id="my_camera_detection" src=""></div>
+    </div>
+
+    <div id="results"></div>
+
+    <script type="text/javascript" src="{{ url_for('static', path='webcamjs/webcam.min.js') }}"></script>
+
+    <script language="JavaScript">
+        Webcam.set({
+            dest_width: 0,
+            dest_height: 0,
+            crop_width: 0,
+            crop_height: 0,
+            width: 320,
+            height: 240,
+            image_format: "jpeg",
+            jpeg_quality: 90,
+            fps: 30,
+        });
+        Webcam.attach("#my_camera");
+
+        function take_snapshot() {
+            Webcam.snap(function(data_uri) {
+                // console.log(data_uri);
+                var data_head = data_uri.split(",")[0];
+                data_uri = data_uri.split(",")[1];
+                // console.log(JSON.stringify({image: data_uri}));
+                fetch("/stream", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            image: data_uri,
+                        }),
+                        header: {
+                            Accept: "application/json",
+                            "content-type": "application/json",
+                        },
+                    })
+                    .then((res) => {
+                        return res.json();
+                    })
+                    .then((result) => {
+                        // console.log(result);
+                        // console.log(Object.keys(result).length);
+                        var my_camera_detection = document.getElementById(
+                            "my_camera_detection"
+                        );
+                        my_camera_detection.innerHTML =
+                            "<img src=" + data_head + "," + result["frame"] + ">";
+
+                        var output = document.createElement("div");
+                        var ele = document.createElement("img");
+                        ele.setAttribute("src", data_head + "," + result["frame"]);
+                        output.appendChild(ele);
+                        var t = document.createElement("p");
+                        var text_tmp = "";
+                        for (var key in result["fsa"]) {
+                            text_tmp +=
+                                key + " = " + result["fsa"][key].toString() + "<br>";
+                        }
+                        t.innerHTML = text_tmp;
+                        output.appendChild(t);
+                        var pose = [
+                            "LEar",
+                            "LEye",
+                            "LShoulder",
+                            "Neck",
+                            "Nose",
+                            "REar",
+                            "REye",
+                            "RShoulder",
+                        ];
+                        var t = document.createElement("p");
+                        var text_tmp = "";
+                        var i = 0;
+                        for (var key in result["tf_pose"]) {
+                            if (pose.indexOf(key) > -1) {
+                                text_tmp += key + "<br>";
+                                i++;
+                            }
+                        }
+                        while (i < 8) {
+                            text_tmp += "<br>";
+                            i++;
+                        }
+                        t.innerHTML = text_tmp;
+                        output.appendChild(t);
+
+                        document.getElementById("results").appendChild(output);
+                    });
+            });
+        }
+        var take_snapshots;
+
+        function get_img(b) {
+            if (b.innerHTML === "On") {
+                b.innerHTML = "Off";
+                if (take_snapshots) {
+                    clearInterval(take_snapshots);
+                }
+                take_snapshots = setInterval(take_snapshot, 1000 * 1); //snapshot頻率 /ms
+            } else {
+                b.innerHTML = "On";
+                clearInterval(take_snapshots);
+            }
+        }
+    </script>
+</body>
+
+</html>
