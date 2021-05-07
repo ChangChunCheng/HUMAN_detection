@@ -13,13 +13,13 @@
   - setup HOST with the host ip
 
 **Steps:**
-1. Build environment with conda.
+1. Build environment with virtualenv.
    ```{bash}
    $ make BuildENV
    ```
-2. Activate conda env.
+2. Activate virtualenv.
    ```{bash}
-   $ conda activate ${ENV_NAME} # ENV_NAME setuped in .env file.
+   $ source bin/activate
    ```
 3. Install dependency packages.
    ```{bash}
