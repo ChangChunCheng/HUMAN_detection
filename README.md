@@ -1,9 +1,10 @@
 # human_detection Environment Building
 
-## This project is building from tf_pose_estimation ans fsanet-pytorch in the following link:
+## This project is building from tf_pose_estimation, fsanet-pytorch and webcam in the following link:
 
 - GitHub: [ZheC/tf-pose-estimation](https://github.com/ZheC/tf-pose-estimation)
 - GitHub: [omasaht/headpose-fsanet-pytorch](https://github.com/omasaht/headpose-fsanet-pytorch)
+- GitHub: [jhukaby/webcamjs](https://github.com/jhuckaby/webcamjs)
 
 **After Install environment**
 - Install python3, python3-pip, virtualenv with pip
